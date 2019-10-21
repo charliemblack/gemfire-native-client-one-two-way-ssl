@@ -16,6 +16,10 @@ Which version your application uses depends on your own security posture.
 
 In this example I also put in some authentication.    I should point out that authentication has nothing todo with SSL.   However most of the time when someone turns on encryption they are also thinking about protecting via authentication.   
 
+If you are looking for a LDAP implementation - Pivotal Services has an open source implementation you can use, alter, contribute to.
+
+https://github.com/Pivotal-Field-Engineering/pivotal-gemfire-ldap
+
 # Prep
 
 For this application to work we need to download three requirements:
