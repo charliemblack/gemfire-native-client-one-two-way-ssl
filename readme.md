@@ -25,7 +25,7 @@ https://github.com/Pivotal-Field-Engineering/pivotal-gemfire-ldap
 For this application to work we need to download three requirements:
 
 1. Pivotal GemFire
-2. Pivotal GemFire Native Client version 9.x
+2. Pivotal GemFire Native Client version 10.x
 2. A GemFire Native Client username and password library
 
 * Download GemFire from pivotal network: https://network.pivotal.io/products/pivotal-gemfire
@@ -37,7 +37,7 @@ If you would like to build the user name and password library your self feel fre
 Once you have downloaded and uncompressed GemFire Native Client library you need to either put the shared library into a well known library location OR set the `LD_LIBRARY_PATH` so the libraries can be found when running the `SampleApp`.
 
 ```
-export LD_LIBRARY_PATH=~/dev/pivotal-gemfire-native-9.1.1-build.2-Linux-64bit/pivotal-gemfire-native/lib/
+export LD_LIBRARY_PATH=~/dev/pivotal-gemfire-native-10.0.2-build.9-Ubuntu16-64bit/pivotal-gemfire-native/lib/
 ```
 
 Then install the GemFire server by `uncompressing` it and adding the `bin` directory to your PATH.
@@ -53,7 +53,7 @@ This sample application uses cmake - make sure you have downloaded and installed
 Since everyone's install location could be different I have made the location of the GemFire Native Client an environment variable - `GEMFIRE_NATIVE_HOME`.   Here is an example:
 
 ```
-export GEMFIRE_NATIVE_HOME=/home/demo/dev/pivotal-gemfire-native-9.1.1-build.2-Linux-64bit/pivotal-gemfire-native
+export GEMFIRE_NATIVE_HOME=/home/demo/dev/pivotal-gemfire-native-10.0.2-build.9-Ubuntu16-64bit/pivotal-gemfire-native
 ```
 
 Build steps

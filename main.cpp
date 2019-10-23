@@ -20,7 +20,12 @@
 #include <unistd.h>
 
 // Include the Geode library.
-#include <geode/GeodeCppCache.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheFactory.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
+#include "UsernamePassword.h"
 
 // Use the "geode" namespace.
 using namespace apache::geode::client;
@@ -50,30 +55,30 @@ int main(int argc, char** argv) {
     // Create a Geode Cache using CacheFactory. By default it will connect to
     // "localhost" at port 40404".
 
-    CachePtr cachePtr = CacheFactory::createCacheFactory()
-            ->set("log-level", "config")
-            ->set("ssl-enabled", "true")
-            ->set("statistic-sampling-enabled", "false")
-            ->set("ssl-keystore", sslKeyStore.c_str())
-            ->set("ssl-keystore-password", "changeit")
-            ->set("ssl-truststore",sslTrustStore.c_str())
-            ->addLocator(hostbuffer, 10334)
-            ->set("security-username", "app")
-            ->set("security-password", "1234567")
-            ->set("security-client-auth-factory", "createGeodeUserPasswordAuth")
-            ->set("security-client-auth-library", "libgeode_user_password_auth")
-            ->create();
 
-    LOGINFO("Created the Geode Cache");
+    auto cachePtr =
+            CacheFactory()
+            .set("log-level", "config")
+            .set("ssl-enabled", "true")
+            .set("statistic-sampling-enabled", "false")
+            .set("ssl-keystore", sslKeyStore)
+            .set("ssl-keystore-password", "changeit")
+            .set("ssl-truststore",sslTrustStore)
+            .set("security-username", "app")
+            .set("security-password", "1234567")
+            .setAuthInitialize(std::unique_ptr<UsernamePassword>(new UsernamePassword()))
+            .create();
 
-    // Set Attributes for the region.
-    RegionFactoryPtr regionFactory =
-            cachePtr->createRegionFactory(PROXY);
 
-    // Create exampleRegion.
-    RegionPtr region = regionFactory->create("test");
+    cachePtr.getPoolManager().createFactory()
+            .addLocator(hostbuffer, 10334)
+            .create("pool");
 
-    LOGINFO("Created the Region");
+    auto region = cachePtr.createRegionFactory(RegionShortcut::PROXY)
+            .setPoolName("pool")
+            .create("test");
+
+
 
 
     std::string rtimmonsKey = "rtimmons";
@@ -82,16 +87,17 @@ int main(int argc, char** argv) {
     std::string scharlesValue = "Sylvia Charles";
 
     std::cout << "Storing id and username in the region" << std::endl;
-    HashMapOfCacheable bulk;
-    for(int i =0 ; i < 100; i++){
-        for (int j = 0 ; j < 100 ; j++){
-            bulk.insert(CacheableKey::create((rtimmonsKey + std::to_string(i) + " " + std::to_string(j)).c_str()), CacheableString::create(rtimmonsValue.c_str()));
-            bulk.insert(CacheableKey::create((scharlesKey+ std::to_string(i) + " " + std::to_string(j)).c_str()), CacheableString::create(scharlesValue.c_str()));
+
+    for(int i =0 ; i < 10; i++){
+        for (int j = 0 ; j < 10 ; j++){
+            region->put(
+                    CacheableKey::create((rtimmonsKey + std::to_string(i) + " " + std::to_string(j))),
+                    CacheableString::create(rtimmonsValue));
+            region->put(
+                    CacheableKey::create((scharlesKey + std::to_string(i) + " " + std::to_string(j))),
+                    CacheableString::create(scharlesValue));
         }
-        region->putAll(bulk);
-        bulk.clear();
     }
-    VectorOfCacheableKey keys;
-    region->serverKeys(keys);
-    std::cout << "number of keys - " << keys.size() << std::endl;
+    auto serverKeys = region->serverKeys();
+    std::cout << "number of keys - " << serverKeys.size() << std::endl;
 }

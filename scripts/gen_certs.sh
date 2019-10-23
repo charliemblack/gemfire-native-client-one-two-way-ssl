@@ -100,6 +100,8 @@ openssl x509 -req -in client.csr -CA server-ca-certificate.pem -CAkey server-ca-
 
 cat client.key one-way-client.crt > one-way-client-keystore.pem
 
+cat  one-way-client.crt client.key > one-way-reverse-client-keystore.pem
+
 cat client.key two-way-client.crt > two-way-client-keystore.pem
 
 cat client-ca-certificate.pem server-ca-certificate.pem > both-ca-truststore.pem
