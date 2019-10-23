@@ -88,15 +88,18 @@ int main(int argc, char** argv) {
 
     std::cout << "Storing id and username in the region" << std::endl;
 
-    for(int i =0 ; i < 10; i++){
-        for (int j = 0 ; j < 10 ; j++){
-            region->put(
+    CacheableHashMap bulk;
+    for(int i =0 ; i < 100; i++){
+        for (int j = 0 ; j < 100 ; j++){
+            bulk.emplace(
                     CacheableKey::create((rtimmonsKey + std::to_string(i) + " " + std::to_string(j))),
                     CacheableString::create(rtimmonsValue));
-            region->put(
+            bulk.emplace(
                     CacheableKey::create((scharlesKey + std::to_string(i) + " " + std::to_string(j))),
                     CacheableString::create(scharlesValue));
         }
+        region->putAll(bulk);
+        bulk.clear();
     }
     auto serverKeys = region->serverKeys();
     std::cout << "number of keys - " << serverKeys.size() << std::endl;
